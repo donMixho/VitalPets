@@ -1,5 +1,7 @@
 package com.vitalpets.citas.service;
 
+import com.vitalpets.citas.client.ClienteClient;
+import com.vitalpets.citas.client.MascotaClient;
 import com.vitalpets.citas.dto.CitaDto;
 import com.vitalpets.citas.model.Cita;
 import com.vitalpets.citas.model.EstadoCita;
@@ -16,10 +18,27 @@ import java.util.stream.Collectors;
 public class CitaService {
 
     private final CitaRepository citaRepository;
+    private final MascotaClient mascotaClient;
+    private final ClienteClient clienteClient;
 
     public CitaDto registrar(CitaDto dto) {
         log.info("Registrando nueva cita para mascota ID: {} - Servicio: {}",
                 dto.getMascotaId(), dto.getTipoServicio());
+
+        // Verificar que la mascota existe en MS-Mascotas
+        if (!mascotaClient.existeMascota(dto.getMascotaId())) {
+            log.error("No se puede agendar cita - Mascota ID: {} no encontrada en MS-Mascotas",
+                    dto.getMascotaId());
+            throw new RuntimeException("Mascota no encontrada con ID: " + dto.getMascotaId());
+        }
+
+        // Verificar que el cliente existe en MS-Clientes
+        if (!clienteClient.existeCliente(dto.getClienteId())) {
+            log.error("No se puede agendar cita - Cliente ID: {} no encontrado en MS-Clientes",
+                    dto.getClienteId());
+            throw new RuntimeException("Cliente no encontrado con ID: " + dto.getClienteId());
+        }
+
         CitaDto resultado = toDto(citaRepository.save(toEntity(dto)));
         log.info("Cita registrada exitosamente con ID: {}", resultado.getId());
         return resultado;
@@ -72,19 +91,29 @@ public class CitaService {
 
     private CitaDto toDto(Cita c) {
         return CitaDto.builder()
-                .id(c.getId()).mascotaId(c.getMascotaId()).clienteId(c.getClienteId())
-                .terceroId(c.getTerceroId()).personalId(c.getPersonalId())
-                .fechaHora(c.getFechaHora()).tipoServicio(c.getTipoServicio())
-                .estado(c.getEstado()).observaciones(c.getObservaciones())
-                .nombreQuienTrae(c.getNombreQuienTrae()).build();
+                .id(c.getId())
+                .mascotaId(c.getMascotaId())
+                .clienteId(c.getClienteId())
+                .terceroId(c.getTerceroId())
+                .personalId(c.getPersonalId())
+                .fechaHora(c.getFechaHora())
+                .tipoServicio(c.getTipoServicio())
+                .estado(c.getEstado())
+                .observaciones(c.getObservaciones())
+                .nombreQuienTrae(c.getNombreQuienTrae())
+                .build();
     }
 
     private Cita toEntity(CitaDto dto) {
         return Cita.builder()
-                .mascotaId(dto.getMascotaId()).clienteId(dto.getClienteId())
-                .terceroId(dto.getTerceroId()).personalId(dto.getPersonalId())
-                .fechaHora(dto.getFechaHora()).tipoServicio(dto.getTipoServicio())
+                .mascotaId(dto.getMascotaId())
+                .clienteId(dto.getClienteId())
+                .terceroId(dto.getTerceroId())
+                .personalId(dto.getPersonalId())
+                .fechaHora(dto.getFechaHora())
+                .tipoServicio(dto.getTipoServicio())
                 .observaciones(dto.getObservaciones())
-                .nombreQuienTrae(dto.getNombreQuienTrae()).build();
+                .nombreQuienTrae(dto.getNombreQuienTrae())
+                .build();
     }
 }

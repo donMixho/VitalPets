@@ -1,8 +1,8 @@
 package com.vitalpets.historial.service;
 
+import com.vitalpets.historial.client.MascotaClient;
 import com.vitalpets.historial.dto.HistorialDto;
 import com.vitalpets.historial.model.HistorialMedico;
-import com.vitalpets.historial.model.TipoEvento;
 import com.vitalpets.historial.repository.HistorialRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,17 +16,26 @@ import java.util.stream.Collectors;
 public class HistorialService {
 
     private final HistorialRepository historialRepository;
+    private final MascotaClient mascotaClient;
 
     public HistorialDto registrar(HistorialDto dto) {
-        log.info("Registrando evento médico para mascota ID: {} - Tipo: {}",
+        log.info("Registrando evento medico para mascota ID: {} - Tipo: {}",
                 dto.getMascotaId(), dto.getTipoEvento());
+
+        // Verificar que la mascota existe en MS-Mascotas
+        if (!mascotaClient.existeMascota(dto.getMascotaId())) {
+            log.error("No se puede registrar historial - Mascota ID: {} no encontrada",
+                    dto.getMascotaId());
+            throw new RuntimeException("Mascota no encontrada con ID: " + dto.getMascotaId());
+        }
+
         HistorialDto resultado = toDto(historialRepository.save(toEntity(dto)));
-        log.info("Evento médico registrado exitosamente con ID: {}", resultado.getId());
+        log.info("Evento medico registrado exitosamente con ID: {}", resultado.getId());
         return resultado;
     }
 
     public List<HistorialDto> listarTodos() {
-        log.info("Consultando historial médico completo");
+        log.info("Consultando historial medico completo");
         return historialRepository.findAll()
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
@@ -54,21 +63,35 @@ public class HistorialService {
 
     private HistorialDto toDto(HistorialMedico h) {
         return HistorialDto.builder()
-                .id(h.getId()).mascotaId(h.getMascotaId()).clienteId(h.getClienteId())
-                .personalId(h.getPersonalId()).citaId(h.getCitaId())
-                .tipoEvento(h.getTipoEvento()).fechaEvento(h.getFechaEvento())
-                .descripcion(h.getDescripcion()).diagnostico(h.getDiagnostico())
-                .tratamiento(h.getTratamiento()).medicamentosRecetados(h.getMedicamentosRecetados())
-                .proximaVisita(h.getProximaVisita()).nombreQuienTrajo(h.getNombreQuienTrajo()).build();
+                .id(h.getId())
+                .mascotaId(h.getMascotaId())
+                .clienteId(h.getClienteId())
+                .personalId(h.getPersonalId())
+                .citaId(h.getCitaId())
+                .tipoEvento(h.getTipoEvento())
+                .fechaEvento(h.getFechaEvento())
+                .descripcion(h.getDescripcion())
+                .diagnostico(h.getDiagnostico())
+                .tratamiento(h.getTratamiento())
+                .medicamentosRecetados(h.getMedicamentosRecetados())
+                .proximaVisita(h.getProximaVisita())
+                .nombreQuienTrajo(h.getNombreQuienTrajo())
+                .build();
     }
 
     private HistorialMedico toEntity(HistorialDto dto) {
         return HistorialMedico.builder()
-                .mascotaId(dto.getMascotaId()).clienteId(dto.getClienteId())
-                .personalId(dto.getPersonalId()).citaId(dto.getCitaId())
-                .tipoEvento(dto.getTipoEvento()).descripcion(dto.getDescripcion())
-                .diagnostico(dto.getDiagnostico()).tratamiento(dto.getTratamiento())
+                .mascotaId(dto.getMascotaId())
+                .clienteId(dto.getClienteId())
+                .personalId(dto.getPersonalId())
+                .citaId(dto.getCitaId())
+                .tipoEvento(dto.getTipoEvento())
+                .descripcion(dto.getDescripcion())
+                .diagnostico(dto.getDiagnostico())
+                .tratamiento(dto.getTratamiento())
                 .medicamentosRecetados(dto.getMedicamentosRecetados())
-                .proximaVisita(dto.getProximaVisita()).nombreQuienTrajo(dto.getNombreQuienTrajo()).build();
+                .proximaVisita(dto.getProximaVisita())
+                .nombreQuienTrajo(dto.getNombreQuienTrajo())
+                .build();
     }
 }
