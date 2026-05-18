@@ -5,49 +5,69 @@ import com.vitalpets.citas.model.Cita;
 import com.vitalpets.citas.model.EstadoCita;
 import com.vitalpets.citas.repository.CitaRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CitaService {
 
     private final CitaRepository citaRepository;
 
     public CitaDto registrar(CitaDto dto) {
-        return toDto(citaRepository.save(toEntity(dto)));
+        log.info("Registrando nueva cita para mascota ID: {} - Servicio: {}",
+                dto.getMascotaId(), dto.getTipoServicio());
+        CitaDto resultado = toDto(citaRepository.save(toEntity(dto)));
+        log.info("Cita registrada exitosamente con ID: {}", resultado.getId());
+        return resultado;
     }
 
     public List<CitaDto> listarTodas() {
+        log.info("Consultando todas las citas");
         return citaRepository.findAll()
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public CitaDto buscarPorId(Long id) {
+        log.info("Buscando cita con ID: {}", id);
         return toDto(citaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cita no encontrada: " + id)));
+                .orElseThrow(() -> {
+                    log.error("Cita no encontrada con ID: {}", id);
+                    return new RuntimeException("Cita no encontrada: " + id);
+                }));
     }
 
     public List<CitaDto> porCliente(Long clienteId) {
+        log.info("Consultando citas del cliente ID: {}", clienteId);
         return citaRepository.findByClienteId(clienteId)
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public List<CitaDto> porEstado(EstadoCita estado) {
+        log.info("Consultando citas por estado: {}", estado);
         return citaRepository.findByEstado(estado)
                 .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public CitaDto cambiarEstado(Long id, EstadoCita nuevoEstado) {
+        log.info("Cambiando estado de cita ID: {} a {}", id, nuevoEstado);
         Cita c = citaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Cita no encontrada: " + id));
+                .orElseThrow(() -> {
+                    log.error("Cita no encontrada para cambiar estado. ID: {}", id);
+                    return new RuntimeException("Cita no encontrada: " + id);
+                });
         c.setEstado(nuevoEstado);
+        log.info("Estado de cita ID: {} actualizado a {}", id, nuevoEstado);
         return toDto(citaRepository.save(c));
     }
 
     public void cancelar(Long id) {
+        log.warn("Cancelando cita con ID: {}", id);
         cambiarEstado(id, EstadoCita.CANCELADA);
+        log.info("Cita ID: {} cancelada correctamente", id);
     }
 
     private CitaDto toDto(Cita c) {
