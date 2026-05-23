@@ -3,6 +3,7 @@ package com.vitalpets.laboratorio.service;
 import com.vitalpets.laboratorio.dto.ExamenDto;
 import com.vitalpets.laboratorio.model.EstadoExamen;
 import com.vitalpets.laboratorio.model.ExamenLaboratorio;
+import com.vitalpets.laboratorio.client.MascotaClient;
 import com.vitalpets.laboratorio.repository.ExamenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,10 +18,15 @@ import java.util.stream.Collectors;
 public class ExamenService {
 
     private final ExamenRepository examenRepository;
+    private final MascotaClient mascotaClient;
 
     public ExamenDto solicitar(ExamenDto dto) {
         log.info("Solicitando examen: {} para mascota ID: {}",
                 dto.getTipoExamen(), dto.getMascotaId());
+        if (!mascotaClient.existeMascota(dto.getMascotaId())) {
+            log.error("No se puede solicitar examen - Mascota ID: {} no encontrada", dto.getMascotaId());
+            throw new RuntimeException("Mascota no encontrada con ID: " + dto.getMascotaId());
+        }
         ExamenLaboratorio entidad = toEntity(dto);
         ExamenLaboratorio guardado = examenRepository.save(entidad);
         ExamenDto resultado = toDto(guardado);

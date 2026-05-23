@@ -2,6 +2,7 @@ package com.vitalpets.vacunas.service;
 
 import com.vitalpets.vacunas.dto.VacunaDto;
 import com.vitalpets.vacunas.model.Vacuna;
+import com.vitalpets.vacunas.client.MascotaClient;
 import com.vitalpets.vacunas.repository.VacunaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,15 @@ import java.util.stream.Collectors;
 public class VacunaService {
 
     private final VacunaRepository vacunaRepository;
+    private final MascotaClient mascotaClient;
 
     public VacunaDto registrar(VacunaDto dto) {
         log.info("Registrando vacuna: {} para mascota ID: {}",
                 dto.getNombreVacuna(), dto.getMascotaId());
+        if (!mascotaClient.existeMascota(dto.getMascotaId())) {
+            log.error("No se puede registrar vacuna - Mascota ID: {} no encontrada", dto.getMascotaId());
+            throw new RuntimeException("Mascota no encontrada con ID: " + dto.getMascotaId());
+        }
         Vacuna entidad = toEntity(dto);
         Vacuna guardada = vacunaRepository.save(entidad);
         VacunaDto resultado = toDto(guardada);

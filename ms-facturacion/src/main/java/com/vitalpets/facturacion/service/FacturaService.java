@@ -3,6 +3,7 @@ package com.vitalpets.facturacion.service;
 import com.vitalpets.facturacion.dto.DetalleFacturaDto;
 import com.vitalpets.facturacion.dto.FacturaDto;
 import com.vitalpets.facturacion.model.*;
+import com.vitalpets.facturacion.client.CitaClient;
 import com.vitalpets.facturacion.repository.FacturaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,10 +17,15 @@ import java.util.stream.Collectors;
 public class FacturaService {
 
     private final FacturaRepository facturaRepository;
+    private final CitaClient citaClient;
 
     public FacturaDto crear(FacturaDto dto) {
         log.info("Creando factura para cliente ID: {} - Mascota ID: {}",
                 dto.getClienteId(), dto.getMascotaId());
+        if (dto.getCitaId() != null && !citaClient.existeCita(dto.getCitaId())) {
+            log.error("No se puede crear factura - Cita ID: {} no encontrada", dto.getCitaId());
+            throw new RuntimeException("Cita no encontrada con ID: " + dto.getCitaId());
+        }
         Factura factura = Factura.builder()
                 .citaId(dto.getCitaId()).clienteId(dto.getClienteId())
                 .mascotaId(dto.getMascotaId()).personalId(dto.getPersonalId())
