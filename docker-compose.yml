@@ -8,7 +8,7 @@ services:
       MYSQL_USER: vitalpets
       MYSQL_PASSWORD: vitalpets123
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - mysql_data:/var/lib/mysql
