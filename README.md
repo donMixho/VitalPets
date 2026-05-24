@@ -6,7 +6,7 @@
 [![Docker](https://img.shields.io/badge/Docker-Compose-blue?style=flat-square&logo=docker)](https://www.docker.com/)
 [![Postman](https://img.shields.io/badge/Postman-Tested-orange?style=flat-square&logo=postman)](https://www.postman.com/)
 
-> Sistema de gestión completo para una veterinaria de alta complejidad que atiende tanto mascotas de compañía como animales exóticos, basado en una arquitectura de microservicios.
+> Sistema de gestión completo para una veterinaria que atiende tanto mascotas de compañía como animales exóticos, basado en una arquitectura de microservicios.
 
 ---
 
@@ -16,21 +16,20 @@
 
 El sistema garantiza la trazabilidad legal de cada visita, permite al personal consultar el inventario de medicamentos en tiempo real, llevar un historial clínico detallado y emitir facturas con el desglose completo de servicios y productos.
 
-Este proyecto corresponde a la **Evaluación Parcial 2** de la asignatura **DSY1103 — Desarrollo FullStack 1** de **Duoc UC**, y fue desarrollado de forma individual.
 
 ---
 
 ## 🎯 Requisitos del Sistema
 
-### Requisitos Funcionales
-- Gestión de usuarios con roles diferenciados (administrador, trabajador, veterinario)
-- Registro y mantenimiento de mascotas con información detallada por especie
-- Control de inventario de medicamentos y productos con alertas de stock mínimo
-- Módulo de citas con asignación de personal y registro de quien trae a la mascota
-- Historial médico clínico completo por mascota
-- Facturación detallada con desglose de servicios y productos
-- Administración de exámenes de laboratorio
-- Registro de personal con sus especialidades e implementos asignados
+    ### Requisitos Funcionales
+    - Gestión de usuarios con roles diferenciados (administrador, trabajador, veterinario)
+    - Registro y mantenimiento de mascotas con información detallada por especie
+    - Control de inventario de medicamentos y productos con alertas de stock mínimo
+    - Módulo de citas con asignación de personal y registro de quien trae a la mascota
+    - Historial médico clínico completo por mascota
+    - Facturación detallada con desglose de servicios y productos
+    - Administración de exámenes de laboratorio
+    - Registro de personal con sus especialidades e implementos asignados
 
 ### Requisitos No Funcionales
 - **Escalabilidad** — cada microservicio puede escalar de forma independiente
@@ -47,16 +46,16 @@ El sistema está dividido en **10 microservicios independientes**, cada uno con 
 
 | # | Microservicio | Puerto | Base de datos | Función |
 |---|---|---|---|---|
-| 1 | **MS-Mascotas** | 8081 | `mascotas_db` | Registro de mascotas y sus datos por especie |
-| 2 | **MS-Clientes** | 8082 | `clientes_db` | Dueños legales y terceros autorizados a llevar la mascota |
-| 3 | **MS-Citas** | 8083 | `citas_db` | Agendamiento de consultas, peluquería y otros servicios |
+| 1 | **MS-Mascotas** | 8081 | `mascotas_db` | Registrar las mascotas y sus datos por especie |
+| 2 | **MS-Clientes** | 8082 | `clientes_db` | Registra los dueños legales y/o terceros autorizados que llevan una mascota |
+| 3 | **MS-Citas** | 8083 | `citas_db` | Agenda las consultas, peluquería y otros servicios |
 | 4 | **MS-Historial** | 8084 | `historial_db` | Historial clínico de cada mascota |
-| 5 | **MS-Inventario** | 8085 | `inventario_db` | Control de medicamentos y productos con stock mínimo |
+| 5 | **MS-Inventario** | 8085 | `inventario_db` | Control de medicamentos, herramientas de trabajo y productos con stock mínimo |
 | 6 | **MS-Facturación** | 8086 | `facturacion_db` | Generación de facturas detalladas |
 | 7 | **MS-Personal** | 8087 | `personal_db` | Veterinarios, estilistas y técnicos con sus implementos |
-| 8 | **MS-Vacunas** | 8088 | `vacunas_db` | Calendario de vacunación de cada mascota |
-| 9 | **MS-Laboratorio** | 8089 | `laboratorio_db` | Solicitud y carga de resultados de exámenes |
-| 10 | **MS-Usuarios** | 8090 | `usuarios_db` | Cuentas de acceso al sistema con autenticación |
+| 8 | **MS-Vacunas** | 8088 | `vacunas_db` | Control de vacunas |
+| 9 | **MS-Laboratorio** | 8089 | `laboratorio_db` | Solicitudes y carga de resultados de exámenes |
+| 10 | **MS-Usuarios** | 8090 | `usuarios_db` | Cuentas de acceso al sistema|
 
 ---
 
@@ -64,7 +63,7 @@ El sistema está dividido en **10 microservicios independientes**, cada uno con 
 
 Uno de los aspectos centrales del proyecto es la **comunicación entre microservicios mediante REST**. Cuando un microservicio necesita verificar información que pertenece a otro dominio, **WebClient** consulta al microservicio responsable. Si la información no existe, la operación se rechaza con un `404 Not Found` antes de que cualquier dato inválido llegue a la base de datos.
 
-| Microservicio origen | Consulta a | Cuándo |
+| Microservicio origen | Consulta a | Cuándo se realiza |
 |---|---|---|
 | MS-Citas | MS-Mascotas + MS-Clientes | Al agendar una cita |
 | MS-Historial | MS-Mascotas | Al registrar un evento médico |
@@ -138,7 +137,7 @@ En la fase inicial del desarrollo, cada microservicio utilizaba **H2 Database** 
 
 Para acercarse más a un entorno de producción real, se migró toda la persistencia a **MySQL 8.0 ejecutándose en un contenedor Docker**. Esta migración trajo las siguientes ventajas:
 
-| Aspecto | H2 (versión inicial) | MySQL Docker (versión actual) |
+| Aspecto | H2 (Al inicio) | MySQL Docker (Ahora) |
 |---|---|---|
 | Persistencia de datos | ❌ Se pierden al apagar | ✅ Persisten en volumen Docker |
 | Aislamiento | ⚠️ En la misma JVM | ✅ Contenedor independiente |
@@ -247,7 +246,7 @@ Cada microservicio sigue el **patrón CSR** (Controller → Service → Reposito
 
 ---
 
-## 📊 Aspectos Técnicos Destacados
+## 📊 Aspectos Técnicos 
 
 - ✅ **Patrón CSR (Controller, Service, Repository)** implementado en los 10 microservicios
 - ✅ **Persistencia JPA** con entidades y relaciones correctamente configuradas
@@ -263,16 +262,14 @@ Cada microservicio sigue el **patrón CSR** (Controller → Service → Reposito
 
 ## 👨‍💻 Autor
 
-**Rafael (donMixho)**  
+**Leandro Ruiz**  
 Estudiante de Ingeniería Informática — Duoc UC  
 Desarrollo individual del proyecto.
-
-🔗 Repositorio: [github.com/donMixho/VitalPets](https://github.com/donMixho/VitalPets)
 
 ---
 
 ## 📚 Asignatura
 
-**DSY1103 — Desarrollo FullStack 1**  
+**DSY1103 — Desarrollo FullStack I**  
 **Evaluación Parcial 2** — Arquitectura de Microservicios  
 **Duoc UC** — 2026
