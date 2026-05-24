@@ -15,4 +15,5 @@ public class PersonalDto {
     private Especialidad especialidad;
     private String implementosAsignados;
     private Boolean activo;
+    private Long usuarioId;
 }

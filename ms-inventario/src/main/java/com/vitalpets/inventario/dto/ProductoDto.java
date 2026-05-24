@@ -16,4 +16,5 @@ public class ProductoDto {
     private Boolean activo;
     // Campo calculado: indica si el stock está bajo mínimo
     private Boolean stockBajo;
+    private Long personalId;
 }

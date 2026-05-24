@@ -11,4 +11,5 @@ public class UsuarioDto {
     private String nombreCompleto;
     private Rol rol;
     private Boolean activo;
+    private Long personalId;
 }

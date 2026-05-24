@@ -1,5 +1,6 @@
 package com.vitalpets.inventario.service;
 
+import com.vitalpets.inventario.client.PersonalClient;
 import com.vitalpets.inventario.dto.ProductoDto;
 import com.vitalpets.inventario.model.CategoriaProducto;
 import com.vitalpets.inventario.model.Producto;
@@ -16,10 +17,15 @@ import java.util.stream.Collectors;
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final PersonalClient personalClient;
 
     public ProductoDto registrar(ProductoDto dto) {
         log.info("Registrando nuevo producto: {} - Categoría: {}",
                 dto.getNombre(), dto.getCategoria());
+        if (dto.getPersonalId() != null && !personalClient.existePersonal(dto.getPersonalId())) {
+            log.error("No se puede registrar producto - Personal ID: {} no encontrado", dto.getPersonalId());
+            throw new RuntimeException("Personal no encontrado con ID: " + dto.getPersonalId());
+        }
         ProductoDto resultado = toDto(productoRepository.save(toEntity(dto)));
         log.info("Producto registrado exitosamente con ID: {}", resultado.getId());
         return resultado;

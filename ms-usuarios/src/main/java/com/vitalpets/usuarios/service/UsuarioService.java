@@ -1,5 +1,6 @@
 package com.vitalpets.usuarios.service;
 
+import com.vitalpets.usuarios.client.PersonalClient;
 import com.vitalpets.usuarios.dto.UsuarioDto;
 import com.vitalpets.usuarios.model.Usuario;
 import com.vitalpets.usuarios.repository.UsuarioRepository;
@@ -15,10 +16,15 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PersonalClient personalClient;
 
     public UsuarioDto registrar(UsuarioDto dto) {
         log.info("Registrando nuevo usuario: {} - Rol: {}",
                 dto.getUsername(), dto.getRol());
+        if (dto.getPersonalId() != null && !personalClient.existePersonal(dto.getPersonalId())) {
+            log.error("No se puede registrar usuario - Personal ID: {} no encontrado", dto.getPersonalId());
+            throw new RuntimeException("Personal no encontrado con ID: " + dto.getPersonalId());
+        }
         UsuarioDto resultado = toDto(usuarioRepository.save(toEntity(dto)));
         log.info("Usuario registrado exitosamente con ID: {}", resultado.getId());
         return resultado;
