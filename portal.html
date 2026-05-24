@@ -26,6 +26,7 @@
       padding: 2.5rem 2rem 2rem;
       text-align: center;
       box-shadow: 0 2px 12px rgba(85, 174, 142, 0.25);
+      position: relative;
     }
 
     header .logo {
@@ -147,34 +148,32 @@
       letter-spacing: 0.3px;
     }
 
-    /* ── FOOTER ── */
-    footer {
-      text-align: center;
-      padding: 1.5rem 1rem;
-      border-top: 1px solid #CEEADF;
-      font-size: 0.8rem;
-      color: #8fa89f;
-    }
-
-    footer a {
+    /* ── BOTÓN VOLVER ── */
+    .btn-back {
+      position: absolute;
+      top: 50%;
+      left: 1.5rem;
+      transform: translateY(-50%);
+      background: #fff;
       color: #78C4A7;
-      text-decoration: none;
+      border: none;
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
       font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s ease;
     }
 
-    footer a:hover {
-      text-decoration: underline;
-    }
-
-    footer span {
-      margin: 0 0.5rem;
-      opacity: 0.4;
+    .btn-back:hover {
+      background: #e8f8f2;
     }
   </style>
 </head>
 <body>
 
   <header>
+    <button class="btn-back" onclick="window.history.back()">← Volver</button>
     <div class="logo">🐾</div>
     <h1>VitalPets — Sistema Veterinario</h1>
     <p>Selecciona un módulo para abrirlo en una nueva pestaña</p>
@@ -278,11 +277,6 @@
     </div>
   </main>
 
-  <footer>
-    DSY1103 — Desarrollo FullStack 1 — DuocUC
-    <span>|</span>
-    <a href="https://github.com/donMixho/VitalPets" target="_blank" rel="noopener">github.com/donMixho/VitalPets</a>
-  </footer>
 
 </body>
 </html>
