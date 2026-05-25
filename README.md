@@ -94,7 +94,7 @@ Cada historia de usuario está vinculada al microservicio (o combinación de ell
 |---|---|---|
 | 👨‍💼 Administrador | Crear nuevos usuarios para gestionar el acceso al sistema | MS-Usuarios |
 | 👨‍⚕️ Trabajador | Crear un perfil por cada mascota que ingrese, registrando su información básica | MS-Mascotas + MS-Clientes |
-| 👨‍⚕️ Trabajador | Registrar medicamentos o productos con stock mínimo definido | MS-Inventario |
+| 👨‍⚕️ Trabajadores | Registrar medicamentos o productos con stock mínimo definido | MS-Inventario |
 | 👨‍⚕️ Trabajador | Registrar la atención completa: medicamento administrado y veterinario que atendió | MS-Historial + MS-Personal |
 | 👨‍⚕️ Trabajador | Registrar diagnóstico y tratamiento para seguimiento adecuado | MS-Historial |
 | 👨‍⚕️ Trabajador | Generar una factura con detalle de servicios, productos y método de pago | MS-Facturación + MS-Citas |
